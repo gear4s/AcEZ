@@ -40,29 +40,50 @@ do
     end
   end
 
-  local widgetCore = {
-    width       = "SetWidth",
-    height      = "SetHeight",
-    relwidth    = "SetRelativeWidth",
-    fullwidth   = sG("FullWidth", {get="Is"}),
-    fullheight  = sG("FullHeight", {get="Is"}),
-    
-    release     = "Release",
-    
-    point       = sG"Point",
-    numpoints   = "GetNumPoints",
-    clearpoints = "ClearAllPoints",
-    
-    shown       = sG("Shown", {get="Is"}, true),
-    visible     = sG("Visible", {get="Is"}, true),
-    
-    udatatable  = sG("GetUserDataTable", {}, true),
-    udata       = sG"UserData",
-    
-    cb = function(self, ev, cb)
-      self.obj:SetCallback(ev, function(...) cb(self, ...) end)
-      return self
-    end
+
+  local core = {
+    widget = {
+      width       = "SetWidth",
+      height      = "SetHeight",
+      relwidth    = "SetRelativeWidth",
+      fullwidth   = sG("FullWidth", {get="Is"}),
+      fullheight  = sG("FullHeight", {get="Is"}),
+      
+      release     = "Release",
+      
+      point       = sG"Point",
+      numpoints   = "GetNumPoints",
+      clearpoints = "ClearAllPoints",
+      
+      shown       = sG("Shown", {get="Is"}, true),
+      visible     = sG("Visible", {get="Is"}, true),
+      
+      udatatable  = sG("GetUserDataTable", {}, true),
+      udata       = sG"UserData",
+      
+      parent = function(self) return self.par end,
+      cb = function(self, ev, cb)
+        self.obj:SetCallback(ev, function(...) cb(self, ...) end)
+        return self
+      end
+    },
+    container = {
+      layout = "SetLayout",
+      autoheight = "SetAutoAdjustHeight",
+      relchild = "ReleaseChildren",
+      dolayout = "DoLayout",
+      paulayout = "PauseLayout",
+      reslayout = "ResumeLayout",
+      cb = function(self, ev, cb)
+        self.obj:SetCallback(ev, function(...) cb(self, ...) end)
+        return self
+      end,
+      child = function(self, child)
+        child.par = self
+        self.obj:AddChild(child.obj)
+        return self
+      end,
+    }
   }
   local bindCore = function(tbl, core)
     -- binds base API to created widgets
@@ -73,10 +94,6 @@ do
     end
   end
   cWT = function(ref)
-    ref.parent = function(self)
-      return self.par
-    end
-    bindCore(ref, widgetCore)
     return {
       obj = nil,
       par = nil,
@@ -106,7 +123,9 @@ do
     }
   end
 
-  cT = function(type,tbl,cb)
+  cT = function(t,type,tbl,cb)
+    bindCore(tbl, core[t and "container" or "widget"])
+    tbl = cWT(tbl)
     addon.Ace[type] = function(...)
       local t = setmetatable({}, tbl)
       t.obj = AceGUI:Create(type)
@@ -117,7 +136,12 @@ do
 end
 
 addon.AceHelper = {
-  createType = cT,
-  createWidget = cWT,
+  addWidget = function(...)
+    cT(false, ...)
+  end,
+  addContainer = function(...)
+    cT(true, ...)
+  end,
+  createTable = cWT,
   SetGet = sG
 }

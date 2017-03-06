@@ -25,24 +25,19 @@ local name, addon = ...
 local AceGUI = LibStub("AceGUI-3.0")
 local AH = addon.AceHelper
 
-local frameTable = AH.createWidget{
-  title = "SetTitle",
-  layout = "SetLayout",
-  statustext = "SetStatusText",
-  child = function(self, child)
-    child.par = self
-    self.obj:AddChild(child.obj)
-    return self
-  end
-}
+--[[
 
-local buttonTable = AH.createWidget{
+    WIDGETS
+
+]]
+
+local buttonTable = {
   text = "SetText",
   width = "SetWidth",
   disabled = "SetDisabled",
 }
 
-local checkboxTable = AH.createWidget{
+local checkboxTable = {
   val = "SetValue",
   type = "SetType",
   img = "SetImage",
@@ -53,7 +48,7 @@ local checkboxTable = AH.createWidget{
   toggle = "ToggleChecked",
 }
 
-local dropdownTable = AH.createWidget{
+local dropdownTable = {
   val = "SetValue",
   list = "SetList",
   text = "SetText",
@@ -64,14 +59,14 @@ local dropdownTable = AH.createWidget{
   itemdisabled = "SetItemDisabled",
 }
 
-local colorpickerTable = AH.createWidget{
+local colorpickerTable = {
   color = "SetColor",
   label = "SetLabel",
   alpha = "SetHasAlpha",
   disabled = "SetDisabled",
 }
 
-local editboxTable = AH.createWidget{
+local editboxTable = {
   text = "SetText",
   label = "SetLabel",
   disabled = "SetDisabled",
@@ -81,17 +76,17 @@ local editboxTable = AH.createWidget{
   hltext = "HighlightText"
 }
 
-local headingTable = AH.createWidget{
+local headingTable = {
   text = "SetText",
 }
 
-local iconTable = AH.createWidget{
+local iconTable = {
   img = "SetImage",
   imgsize = "SetImageSize",
   label = "SetLabel",
 }
 
-local ilabelTable = AH.createWidget{
+local ilabelTable = {
   text = "SetText",
   color = "SetColor",
   font = "SetFont",
@@ -102,13 +97,13 @@ local ilabelTable = AH.createWidget{
   hltexcoord = "SetHighlightTexCoord",
 }
 
-local kbindTable = AH.createWidget{
+local kbindTable = {
   label = "SetLabel",
   disabled = "SetDisabled",
   key = AH.SetGet"Key"
 }
 
-local labelTable = AH.createWidget{
+local labelTable = {
   text = "SetText",
   color = "SetColor",
   font = "SetFont",
@@ -117,7 +112,7 @@ local labelTable = AH.createWidget{
   imgsize = "SetImageSize"
 }
 
-local mleditboxTable = AH.createWidget{
+local mleditboxTable = {
   text = AH.SetGet"Text",
   label = "SetLabel",
   numlines = "SetNumLines",
@@ -129,7 +124,7 @@ local mleditboxTable = AH.createWidget{
   focus = "SetFocus"
 }
 
-local sliderTable = AH.createWidget{
+local sliderTable = {
   value = AH.SetGet"Value",
   values = "SetSliderValues",
   ispercent = "SetIsPercent",
@@ -137,7 +132,7 @@ local sliderTable = AH.createWidget{
   disabled = "SetDisabled"
 }
 
-local sliderTable = AH.createWidget{
+local sliderTable = {
   value = AH.SetGet"Value",
   values = "SetSliderValues",
   ispercent = "SetIsPercent",
@@ -145,17 +140,70 @@ local sliderTable = AH.createWidget{
   disabled = "SetDisabled"
 }
 
-AH.createType("Frame", frameTable, function(t, txt) t:SetTitle(txt) end)
-AH.createType("Button", buttonTable, function(t, txt) t:SetText(txt) end)
-AH.createType("CheckBox", checkboxTable, function(t, txt) t:SetLabel(txt) end)
-AH.createType("Dropdown", dropdownTable, function(t, txt) t:SetLabel(txt) end)
-AH.createType("ColorPicker", colorpickerTable, function(t, txt) t:SetLabel(txt) end)
-AH.createType("EditBox", editboxTable, function(t, txt) t:SetLabel(txt) end)
-AH.createType("Heading", headingTable, function(t, txt) t:SetText(txt) end)
-AH.createType("Icon", iconTable, function(t, txt) t:SetLabel(txt) end)
-AH.createType("InteractiveLabel", ilabelTable, function(t, txt) t:SetText(txt) end)
-AH.createType("Keybinding", kbindTable, function(t, txt) t:SetLabel(txt) end)
-AH.createType("Label", labelTable, function(t, txt) t:SetText(txt) end)
-AH.createType("MultiLineEditBox", mleditboxTable, function(t, txt) t:SetText(txt) end)
-AH.createType("Slider", sliderTable, function(t, txt) t:SetValue(txt) end)
+AH.addWidget("Button", buttonTable, function(t, txt) t:SetText(txt) end)
+AH.addWidget("CheckBox", checkboxTable, function(t, txt) t:SetLabel(txt) end)
+AH.addWidget("Dropdown", dropdownTable, function(t, txt) t:SetLabel(txt) end)
+AH.addWidget("ColorPicker", colorpickerTable, function(t, txt) t:SetLabel(txt) end)
+AH.addWidget("EditBox", editboxTable, function(t, txt) t:SetLabel(txt) end)
+AH.addWidget("Heading", headingTable, function(t, txt) t:SetText(txt) end)
+AH.addWidget("Icon", iconTable, function(t, txt) t:SetLabel(txt) end)
+AH.addWidget("InteractiveLabel", ilabelTable, function(t, txt) t:SetText(txt) end)
+AH.addWidget("Keybinding", kbindTable, function(t, txt) t:SetLabel(txt) end)
+AH.addWidget("Label", labelTable, function(t, txt) t:SetText(txt) end)
+AH.addWidget("MultiLineEditBox", mleditboxTable, function(t, txt) t:SetText(txt) end)
+AH.addWidget("Slider", sliderTable, function(t, txt) t:SetValue(txt) end)
+
+
+--[[
+
+    CONTAINERS
+
+]]
+
+local dropdowngroupTable = {
+  title = "SetTitle",
+  glist = "SetGroupList",
+  group = "SetGroup",
+  width = "SetDropdownWidth",
+  stattable = "SetStatusTable"
+}
+
+local frameTable = {
+  title = "SetTitle",
+  statustext = "SetStatusText",
+  stattable = "SetStatusTable",
+  applystatus = "ApplyStatus"
+}
+
+local inlinegroupTable = {
+  title = "SetTitle",
+}
+
+local scrollTable = {
+  scroll = "SetScroll",
+  stattable = "SetStatusTable"
+}
+
+local tabgroupTable = {
+  title = "SetTitle",
+  tabs = "SetTabs",
+  seltab = "SelectTab",
+  stattable = "SetStatusTable"
+}
+
+local treegroupTable = {
+  tree = "SetTree",
+  selpath = "SelectByPath",
+  selval = "SelectByValue",
+  btntooltips = "EnableButtonTooltips",
+  stattable = "SetStatusTable"
+}
+
+AH.addContainer("DropdownGroup", dropdowngroupTable, function(t, txt) t:SetTitle(txt) end)
+AH.addContainer("Frame", frameTable, function(t, txt) t:SetTitle(txt) end)
+AH.addContainer("InlineGroup", inlinegroupTable, function(t, txt) t:SetTitle(txt) end)
+AH.addContainer("ScrollFrame", scrollTable)
+AH.addContainer("SimpleGroup", {})
+AH.addContainer("TabGroup", tabgroupTable, function(t, txt) t:SetTitle(txt) end)
+AH.addContainer("TreeGroup", tabgroupTable, function(t, txt) t:SetTitle(txt) end)
 
