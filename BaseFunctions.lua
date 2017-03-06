@@ -74,6 +74,7 @@ do
       dolayout = "DoLayout",
       paulayout = "PauseLayout",
       reslayout = "ResumeLayout",
+      parent = function(self) return self.par end,
       cb = function(self, ev, cb)
         self.obj:SetCallback(ev, function(...) cb(self, ...) end)
         return self
@@ -123,13 +124,13 @@ do
     }
   end
 
-  cT = function(t,type,tbl,cb)
+  cT = function(t,c,type,tbl,cb)
     bindCore(tbl, core[t and "container" or "widget"])
     tbl = cWT(tbl)
     addon.Ace[type] = function(...)
       local t = setmetatable({}, tbl)
-      t.obj = AceGUI:Create(type)
-      if cb then cb(t.obj, ...) end
+      t.obj = AceGUI:Create(c)
+      if cb then cb(t, ...) end
       return t
     end
   end
@@ -137,10 +138,13 @@ end
 
 addon.AceHelper = {
   addWidget = function(...)
-    cT(false, ...)
+    cT(false, ..., ...)
   end,
   addContainer = function(...)
-    cT(true, ...)
+    cT(true, ..., ...)
+  end,
+  addCustomItem = function(...)
+    cT(...)
   end,
   createTable = cWT,
   SetGet = sG

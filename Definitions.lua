@@ -22,7 +22,6 @@
 ]]
 
 local name, addon = ...
-local AceGUI = LibStub("AceGUI-3.0")
 local AH = addon.AceHelper
 
 --[[
@@ -206,4 +205,41 @@ AH.addContainer("ScrollFrame", scrollTable)
 AH.addContainer("SimpleGroup", {})
 AH.addContainer("TabGroup", tabgroupTable, function(t, txt) t:SetTitle(txt) end)
 AH.addContainer("TreeGroup", tabgroupTable, function(t, txt) t:SetTitle(txt) end)
+
+AH.addCustomItem(
+  true, "TabGroup", "AutoTabGroup",
+  {
+    title = "SetTitle",
+    tabs = "SetTabs",
+    seltab = "SelectTab",
+    stattable = "SetStatusTable",
+    addtab = function(self, gid, gname, gcb)
+      self.tabs[#self.tabs+1] = {value=gid, text=gname}
+      self.cbs[gid] = gcb
+      self:SetTabs(self.tabs)
+      return self
+    end
+  },
+  function(t, txt)
+    t.tabs = {}
+    t.cbs = {}
+    t:cb(
+      "OnGroupSelected",
+      function(self,_,_,gid)
+        self:ReleaseChildren()
+        if self.cbs[gid] then
+          self.cbs[gid](self)
+        end
+      end
+    )
+    t:SetTitle(txt)
+  end
+)
+
+
+
+
+
+
+
 
