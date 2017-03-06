@@ -24,54 +24,100 @@
 local name, addon = ...
 local AceGUI = LibStub("AceGUI-3.0")
 
-local createTable = function(ref)
-  ref.parent = function(self)
-    return self.par
+addon.Ace = {}
+
+local sG, cWT, cT
+
+do
+  sG = function(key, tab, rO)
+    return function(self, val)
+      if val ~= nil and not rO then
+        self.obj[(tab and tab.set or "Set")..key](self.obj, val)
+        return self
+      else
+        return self.obj[(tab and tab.get or "Get")..key](self.obj)
+      end
+    end
   end
-  ref.cb = function(self, ev, cb)
-    self.obj:SetCallback(ev, function(...) cb(self, ...) end)
-    return self
-  end
-  return {
-    obj = nil,
-    par = nil,
+
+  local widgetCore = {
+    width       = "SetWidth",
+    height      = "SetHeight",
+    relwidth    = "SetRelativeWidth",
+    fullwidth   = sG("FullWidth", {get="Is"}),
+    fullheight  = sG("FullHeight", {get="Is"}),
     
-    __call = function(self, cmd, ...)
-      self.obj[cmd](self.obj, ...)
-    end,
+    release     = "Release",
     
-    __index = function(self, key)
-      return
-          -- return obj or par if requested (without metatable)
-          rawget(self, key) or
-          -- if "custom" function defined, return that
-          type(ref[key]) == "function"  and ref[key] or
-          -- if is a value/function of the Ace3 library, return that
-          function(self, ...)
-            local k2 = key
-            local key = self.obj[ref[key]] and ref[key] or self.obj[key] and key or nil
-            if key then
-              self.obj[key](self.obj, ...)
-            else
-              error("Function undefined: "..k2)
-            end
-            return self
-          end
+    point       = sG"Point",
+    numpoints   = "GetNumPoints",
+    clearpoints = "ClearAllPoints",
+    
+    shown       = sG("Shown", {get="Is"}, true),
+    visible     = sG("Visible", {get="Is"}, true),
+    
+    udatatable  = sG("GetUserDataTable", {}, true),
+    udata       = sG"UserData",
+    
+    cb = function(self, ev, cb)
+      self.obj:SetCallback(ev, function(...) cb(self, ...) end)
+      return self
     end
   }
-end
+  local bindCore = function(tbl, core)
+    -- binds base API to created widgets
+    for k,v in pairs(core) do
+      if not tbl[k] then
+        tbl[k] = v
+      end
+    end
+  end
+  cWT = function(ref)
+    ref.parent = function(self)
+      return self.par
+    end
+    bindCore(ref, widgetCore)
+    return {
+      obj = nil,
+      par = nil,
+      
+      __call = function(self, cmd, ...)
+        self.obj[cmd](self.obj, ...)
+      end,
+      
+      __index = function(self, key)
+        return
+            -- return obj or par if requested (without metatable)
+            rawget(self, key) or
+            -- if "custom" function defined, return that
+            type(ref[key]) == "function"  and ref[key] or
+            -- if is a value/function of the Ace3 library, return that
+            function(self, ...)
+              local k2 = key
+              local key = self.obj[ref[key]] and ref[key] or self.obj[key] and key or nil
+              if key then
+                self.obj[key](self.obj, ...)
+              else
+                error("Function undefined: "..k2)
+              end
+              return self
+            end
+      end
+    }
+  end
 
-addon.Ace = {}
-local createType = function(type,tbl,cb)
-  addon.Ace[type] = function(...)
-    local t = setmetatable({}, tbl)
-    t.obj = AceGUI:Create(type)
-    if cb then cb(t.obj, ...) end
-    return t
+  cT = function(type,tbl,cb)
+    addon.Ace[type] = function(...)
+      local t = setmetatable({}, tbl)
+      t.obj = AceGUI:Create(type)
+      if cb then cb(t.obj, ...) end
+      return t
+    end
   end
 end
 
 addon.AceHelper = {
-  createType = createType,
-  createTable = createTable
+  createType = cT,
+  createWidget = cWT,
+  SetGet = sG
 }
