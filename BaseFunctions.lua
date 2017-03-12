@@ -43,96 +43,117 @@ do
 
   local core = {
     widget = {
-      width       = "SetWidth",
-      height      = "SetHeight",
-      relwidth    = "SetRelativeWidth",
-      fullwidth   = sG("FullWidth", {get="Is"}),
-      fullheight  = sG("FullHeight", {get="Is"}),
+      width         = "SetWidth",
+      height        = "SetHeight",
+      relwidth      = "SetRelativeWidth",
+      fullwidth     = sG("FullWidth", {get="Is"}),
+      fullheight    = sG("FullHeight", {get="Is"}),
       
-      release     = "Release",
+      release       = "Release",
       
-      point       = sG"Point",
-      numpoints   = "GetNumPoints",
-      clearpoints = "ClearAllPoints",
+      point         = sG"Point",
+      numpoints     = "GetNumPoints",
+      clearpoints   = "ClearAllPoints",
       
-      shown       = sG("Shown", {get="Is"}, true),
-      visible     = sG("Visible", {get="Is"}, true),
+      shown         = sG("Shown", {get="Is"}, true),
+      visible       = sG("Visible", {get="Is"}, true),
       
-      udatatable  = sG("GetUserDataTable", {}, true),
-      udata       = sG"UserData",
-      
-      parent = function(self) return self.par end,
-      cb = function(self, ev, cb)
-        self.obj:SetCallback(ev, function(...) cb(self, ...) end)
-        return self
-      end
+      udatatable    = sG("GetUserDataTable", {}, true),
+      udata         = sG"UserData",
+
+      parent        = function(self)
+                        return self.par
+                      end,
+      highestparent = function(self)
+                        if type(self.par) == "function" then
+                          return self
+                        end
+                        return self.par:highestparent()
+                      end,
+      cb            = function(self, ev, cb)
+                        self.obj:SetCallback(ev, function(...) cb(self, ...) end)
+                        return self
+                      end
     },
-    container = {
-      layout = "SetLayout",
-      autoheight = "SetAutoAdjustHeight",
-      relchild = "ReleaseChildren",
-      dolayout = "DoLayout",
-      paulayout = "PauseLayout",
-      reslayout = "ResumeLayout",
-      parent = function(self) return self.par end,
-      cb = function(self, ev, cb)
-        self.obj:SetCallback(ev, function(...) cb(self, ...) end)
-        return self
-      end,
-      child = function(self, child)
-        child.par = self
-        self.obj:AddChild(child.obj)
-        return self
-      end,
+    container     = {
+      layout        = "SetLayout",
+      autoheight    = "SetAutoAdjustHeight",
+      relchild      = "ReleaseChildren",
+      dolayout      = "DoLayout",
+      paulayout     = "PauseLayout",
+      reslayout     = "ResumeLayout",
+
+      child         = function(self, child)
+                        child.par = self
+                        self.obj:AddChild(child.obj)
+                        return self
+                      end,
+      parent        = function(self)
+                        return self.par
+                      end,
+      highestparent = function(self
+                        if type(self.par) == "function" then
+                          return self
+                        end
+                        return self.par:highestparent()
+                      end,
+
+      cb            = function(self, ev, cb)
+                        self.obj:SetCallback(ev, function(...) cb(self, ...) end)
+                        return self
+                      end,
     }
   }
-  local bindCore = function(tbl, core)
-    -- binds base API to created widgets
-    for k,v in pairs(core) do
-      if not tbl[k] then
-        tbl[k] = v
-      end
-    end
-  end
+
   cWT = function(ref)
     return {
-      obj = nil,
-      par = nil,
+      obj     = nil,
+      par     = nil,
       
-      __call = function(self, cmd, ...)
-        self.obj[cmd](self.obj, ...)
-      end,
+      __call  = function(self, cmd, ...)
+                  self.obj[cmd](self.obj, ...)
+                end,
       
       __index = function(self, key)
-        return
-            -- return obj or par if requested (without metatable)
-            rawget(self, key) or
-            -- if "custom" function defined, return that
-            type(ref[key]) == "function"  and ref[key] or
-            -- if is a value/function of the Ace3 library, return that
-            function(self, ...)
-              local k2 = key
-              local key = self.obj[ref[key]] and ref[key] or self.obj[key] and key or nil
-              if key then
-                self.obj[key](self.obj, ...)
-              else
-                error("Function undefined: "..k2)
-              end
-              return self
-            end
-      end
+                  -- oh my god here we go
+                  -- sue me.
+                  return
+                      -- return obj or par if requested (without metatable)
+                      rawget(self, key) or
+                      -- if "custom" function defined, return that
+                      type(ref[key]) == "function"  and ref[key] or
+                      -- if is a value/function of the Ace3 library, return that
+                      function(self, ...)
+                        local k2 = key
+                        local key = self.obj[ref[key]] and ref[key] or self.obj[key] and key or nil
+                        if key then
+                          self.obj[key](self.obj, ...)
+                        else
+                          error("Key undefined: "..k2)
+                        end
+                        return self
+                      end
+                end
     }
   end
 
+  local bindCore  = function(tbl, core)
+                      -- binds base API to created widgets
+                      for k,v in pairs(core) do
+                        if not tbl[k] then
+                          tbl[k] = v
+                        end
+                      end
+                    end
   cT = function(t,c,type,tbl,cb)
     bindCore(tbl, core[t and "container" or "widget"])
     tbl = cWT(tbl)
     addon.Ace[type] = function(...)
-      local t = setmetatable({}, tbl)
-      t.obj = AceGUI:Create(c)
-      if cb then cb(t, ...) end
-      return t
-    end
+                        local t = setmetatable({}, tbl)
+                        t.obj = AceGUI:Create(c)
+                        if cb then cb(t, ...) end
+                        return t
+                      end
   end
 end
 

@@ -139,18 +139,18 @@ local sliderTable = {
   disabled = "SetDisabled"
 }
 
-AH.addWidget("Button", buttonTable, function(t, txt) t:SetText(txt) end)
-AH.addWidget("CheckBox", checkboxTable, function(t, txt) t:SetLabel(txt) end)
-AH.addWidget("Dropdown", dropdownTable, function(t, txt) t:SetLabel(txt) end)
-AH.addWidget("ColorPicker", colorpickerTable, function(t, txt) t:SetLabel(txt) end)
-AH.addWidget("EditBox", editboxTable, function(t, txt) t:SetLabel(txt) end)
-AH.addWidget("Heading", headingTable, function(t, txt) t:SetText(txt) end)
-AH.addWidget("Icon", iconTable, function(t, txt) t:SetLabel(txt) end)
-AH.addWidget("InteractiveLabel", ilabelTable, function(t, txt) t:SetText(txt) end)
-AH.addWidget("Keybinding", kbindTable, function(t, txt) t:SetLabel(txt) end)
-AH.addWidget("Label", labelTable, function(t, txt) t:SetText(txt) end)
-AH.addWidget("MultiLineEditBox", mleditboxTable, function(t, txt) t:SetText(txt) end)
-AH.addWidget("Slider", sliderTable, function(t, txt) t:SetValue(txt) end)
+AH.addWidget("CheckBox",          checkboxTable,    function(t, txt) t:SetLabel(txt) end)
+AH.addWidget("Dropdown",          dropdownTable,    function(t, txt) t:SetLabel(txt) end)
+AH.addWidget("ColorPicker",       colorpickerTable, function(t, txt) t:SetLabel(txt) end)
+AH.addWidget("EditBox",           editboxTable,     function(t, txt) t:SetLabel(txt) end)
+AH.addWidget("Icon",              iconTable,        function(t, txt) t:SetLabel(txt) end)
+AH.addWidget("Keybinding",        kbindTable,       function(t, txt) t:SetLabel(txt) end)
+AH.addWidget("Slider",            sliderTable,      function(t, txt) t:SetValue(txt) end)
+AH.addWidget("Button",            buttonTable,      function(t, txt) t:SetText (txt) end)
+AH.addWidget("Heading",           headingTable,     function(t, txt) t:SetText (txt) end)
+AH.addWidget("InteractiveLabel",  ilabelTable,      function(t, txt) t:SetText (txt) end)
+AH.addWidget("Label",             labelTable,       function(t, txt) t:SetText (txt) end)
+AH.addWidget("MultiLineEditBox",  mleditboxTable,   function(t, txt) t:SetText (txt) end)
 
 
 --[[
@@ -204,8 +204,21 @@ AH.addContainer("InlineGroup", inlinegroupTable, function(t, txt) t:SetTitle(txt
 AH.addContainer("ScrollFrame", scrollTable)
 AH.addContainer("SimpleGroup", {})
 AH.addContainer("TabGroup", tabgroupTable, function(t, txt) t:SetTitle(txt) end)
-AH.addContainer("TreeGroup", tabgroupTable, function(t, txt) t:SetTitle(txt) end)
+AH.addContainer("TreeGroup", treegroupTable, function(t, txt) t:SetTitle(txt) end)
 
+
+--[[
+
+    CUSTOM ITEMS
+
+]]
+
+-- AutoTabGroup
+-- Tab group with tabbing functionality built-in
+-- function addtab(TabID, TabName, TabCallback(self))
+-- - adds tabs to the tab list
+-- - TabID and TabName are forwarded to self.tabs{} which is passed to TabGroup:SetTabs()
+-- - TabCallback(self) is the callback. self:child() to add child
 AH.addCustomItem(
   true, "TabGroup", "AutoTabGroup",
   {
